@@ -1,7 +1,7 @@
 import sys 
 import RobotControl as rbt
 from functools import partial
-
+from PyQt6 import QtCore
 from PyQt6.QtWidgets import (
     QApplication,
     QLabel,
@@ -15,6 +15,7 @@ from PyQt6.QtWidgets import (
     QFormLayout,
     QLineEdit,
     QCheckBox,
+    QToolButton,
 )
 
 from PyQt6.QtGui import (
@@ -39,6 +40,7 @@ class GUIWindow(QMainWindow):
         self.setCentralWidget(centralWidget)
 
         self._createButtons()
+        self._createArrowButtons()
         self._createStatusBar()
         
     def _createButtons(self):
@@ -99,6 +101,45 @@ class GUIWindow(QMainWindow):
         #Add sub layouts to outer layout
         self.outerLayout.addLayout(baseFunctionLayout)
         self.outerLayout.addLayout(moveFunctionLayout)
+
+    def _createArrowButtons(self):
+        self.baseArrowLayout = QHBoxLayout()
+        YZArrowLayout = QVBoxLayout()
+        YArrowLayout = QHBoxLayout()
+        XArrowLayout = QVBoxLayout()
+
+        Z_pos_button = QToolButton()
+        Z_pos_button.setArrowType(QtCore.Qt.ArrowType.UpArrow)
+
+        Z_neg_button = QToolButton()
+        Z_neg_button.setArrowType(QtCore.Qt.ArrowType.DownArrow)
+
+        Y_pos_button = QToolButton()
+        Y_pos_button.setArrowType(QtCore.Qt.ArrowType.RightArrow)
+
+        Y_neg_button = QToolButton()
+        Y_neg_button.setArrowType(QtCore.Qt.ArrowType.LeftArrow)
+
+        X_pos_button = QToolButton()
+        X_pos_button.setArrowType(QtCore.Qt.ArrowType.DownArrow)
+
+        X_neg_button = QToolButton()
+        X_neg_button.setArrowType(QtCore.Qt.ArrowType.UpArrow)
+
+        YZArrowLayout.addWidget(Z_pos_button, alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
+        YArrowLayout.addWidget(Y_neg_button)
+        YArrowLayout.addWidget(Y_pos_button)
+        YZArrowLayout.addLayout(YArrowLayout)
+        YZArrowLayout.addWidget(Z_neg_button, alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
+
+        XArrowLayout.addWidget(X_neg_button)
+        XArrowLayout.addWidget(X_pos_button)
+
+        self.baseArrowLayout.addLayout(YZArrowLayout)
+        self.baseArrowLayout.addLayout(XArrowLayout)
+
+        self.outerLayout.addLayout(self.baseArrowLayout)
+
 
     def _createStatusBar(self):
         self.status_bar = QStatusBar()
