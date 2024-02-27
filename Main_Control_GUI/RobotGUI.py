@@ -33,7 +33,7 @@ class GUIWindow(QMainWindow):
 
         # Create an outer layout
         self.outerLayout = QVBoxLayout()
-        
+        self.outerLayout.setSpacing(5)
         # Define central widget and set the main layout
         centralWidget = QWidget(self)
         centralWidget.setLayout(self.outerLayout)
@@ -104,10 +104,12 @@ class GUIWindow(QMainWindow):
 
     def _createArrowButtons(self):
         self.baseArrowLayout = QHBoxLayout()
+        self.baseArrowLayout.setSpacing(20)  
         YZArrowLayout = QVBoxLayout()
         YArrowLayout = QHBoxLayout()
+        YArrowLayout.setSpacing(50)
         XArrowLayout = QVBoxLayout()
-
+  
         #add line edit for changing jog speed
         jogSpeed_lineEdit = QLineEdit()
         jogSpeed_lineEdit.setValidator(QDoubleValidator())
@@ -164,6 +166,8 @@ class GUIWindow(QMainWindow):
         XArrowLayout.addWidget(X_pos_button)
 
         jogSpeedLayout = QVBoxLayout()
+        jogSpeedLayout.addStretch(1)
+        jogSpeedLayout.setSpacing(5)
         jogSpeedLayout.addWidget(QLabel("Jog Speed (mm/s)"))
         jogSpeedLayout.addWidget(jogSpeed_lineEdit)
         self.baseArrowLayout.addLayout(jogSpeedLayout)
