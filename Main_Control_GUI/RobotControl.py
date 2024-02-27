@@ -43,7 +43,6 @@ def add(num):
 #define global variables for labview
 
 
-#default function that defines robotStatus object 
 def default():   
     pass 
 
@@ -118,6 +117,23 @@ def rotate_mouse(ang_vel):
 def translate_mouse(lin_vel):
     if robotStatus.get_initialize():
         translation(20, lin_vel)
+    else:
+        raise Exception("Robot not activated and homed")
+    
+def jog_robot(direction, speed):
+    if robotStatus.get_initialize():
+        if direction == "Z_pos":
+            robot.MoveLinVelWrf(0,0,speed,0,0,0)
+        if direction == "Z_neg":
+            robot.MoveLinVelWrf(0,0,-speed,0,0,0)
+        if direction == "Y_pos":
+            robot.MoveLinVelWrf(0,speed,0,0,0,0)
+        if direction == "Y_neg":
+            robot.MoveLinVelWrf(0,-speed,0,0,0,0)
+        if direction == "X_pos":
+            robot.MoveLinVelWrf(speed,0,0,0,0,0)
+        if direction == "X_neg":
+            robot.MoveLinVelWrf(-speed,0,0,0,0,0)
     else:
         raise Exception("Robot not activated and homed")
     

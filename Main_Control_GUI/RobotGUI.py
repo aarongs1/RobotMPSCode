@@ -108,23 +108,51 @@ class GUIWindow(QMainWindow):
         YArrowLayout = QHBoxLayout()
         XArrowLayout = QVBoxLayout()
 
+        #add line edit for changing jog speed
+        jogSpeed_lineEdit = QLineEdit()
+        jogSpeed_lineEdit.setValidator(QDoubleValidator())
+
         Z_pos_button = QToolButton()
+        Z_pos_button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
+        Z_pos_button.setText("Z+")
         Z_pos_button.setArrowType(QtCore.Qt.ArrowType.UpArrow)
+        Z_pos_button.setAutoRepeat(True)
+        Z_pos_button.clicked.connect(partial(self.jog_wrapper, "Z_pos", jogSpeed_lineEdit))
 
         Z_neg_button = QToolButton()
+        Z_neg_button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
+        Z_neg_button.setText("Z-")
         Z_neg_button.setArrowType(QtCore.Qt.ArrowType.DownArrow)
+        Z_neg_button.setAutoRepeat(True)
+        Z_neg_button.clicked.connect(partial(self.jog_wrapper, "Z_neg", jogSpeed_lineEdit))
 
         Y_pos_button = QToolButton()
+        Y_pos_button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+        Y_pos_button.setText("Y+")
         Y_pos_button.setArrowType(QtCore.Qt.ArrowType.RightArrow)
+        Y_pos_button.setAutoRepeat(True)
+        Y_pos_button.clicked.connect(partial(self.jog_wrapper, "Y_pos", jogSpeed_lineEdit))
 
         Y_neg_button = QToolButton()
+        Y_neg_button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+        Y_neg_button.setText("Y-")
         Y_neg_button.setArrowType(QtCore.Qt.ArrowType.LeftArrow)
+        Y_neg_button.setAutoRepeat(True)
+        Y_neg_button.clicked.connect(partial(self.jog_wrapper, "Y_neg", jogSpeed_lineEdit))
 
         X_pos_button = QToolButton()
+        X_pos_button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
+        X_pos_button.setText("X+")
         X_pos_button.setArrowType(QtCore.Qt.ArrowType.DownArrow)
+        X_pos_button.setAutoRepeat(True)
+        X_pos_button.clicked.connect(partial(self.jog_wrapper, "X_pos", jogSpeed_lineEdit))
 
         X_neg_button = QToolButton()
+        X_neg_button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
+        X_neg_button.setText("X-")
         X_neg_button.setArrowType(QtCore.Qt.ArrowType.UpArrow)
+        X_neg_button.setAutoRepeat(True)
+        X_neg_button.clicked.connect(partial(self.jog_wrapper, "X_neg", jogSpeed_lineEdit))
 
         YZArrowLayout.addWidget(Z_pos_button, alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
         YArrowLayout.addWidget(Y_neg_button)
@@ -134,6 +162,11 @@ class GUIWindow(QMainWindow):
 
         XArrowLayout.addWidget(X_neg_button)
         XArrowLayout.addWidget(X_pos_button)
+
+        jogSpeedLayout = QVBoxLayout()
+        jogSpeedLayout.addWidget(QLabel("Jog Speed (mm/s)"))
+        jogSpeedLayout.addWidget(jogSpeed_lineEdit)
+        self.baseArrowLayout.addLayout(jogSpeedLayout)
 
         self.baseArrowLayout.addLayout(YZArrowLayout)
         self.baseArrowLayout.addLayout(XArrowLayout)
@@ -160,6 +193,10 @@ class GUIWindow(QMainWindow):
     def translation_wrapper(self, line_obj):
         linear_speed = line_obj.text()
         rbt.translate_mouse(float(linear_speed))
+
+    def jog_wrapper(self, direction, speed):
+        linear_speed = speed.text()
+        rbt.jog_robot(direction, float(linear_speed))
 
 def main():
     GUI = QApplication([])
