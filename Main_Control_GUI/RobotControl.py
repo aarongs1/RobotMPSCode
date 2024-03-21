@@ -83,12 +83,12 @@ def beam_pos():
 def pickup_mouse():
     x = 155
     y = 0
-    z = 110
+    z = 110.5
     joint_vel = 10
     cart_vel = 10
     if robotStatus.get_initialize():
         if robotStatus.get_beam_pos_status():
-            robotStatus.set_beam_pos_status()
+            robotStatus.set_beam_pos_status(False)
             clear_beam()
         pickup(0, (x,y,z), joint_vel, cart_vel, initial_placement=True)
         robotStatus.set_mouse_status()

@@ -16,6 +16,7 @@ from PyQt6.QtWidgets import (
     QLineEdit,
     QCheckBox,
     QToolButton,
+    QTabWidget,
 )
 
 from PyQt6.QtGui import (
@@ -39,10 +40,75 @@ class GUIWindow(QMainWindow):
         centralWidget.setLayout(self.outerLayout)
         self.setCentralWidget(centralWidget)
 
+        tabs = QTabWidget()
+        tabs.addTab(self._generalTabUI(), "General")
+        tabs.addTab(self._experimentsTabUI(), "Experiments")
+
+        self.outerLayout.addWidget(tabs)
+        
+    def _generalTabUI(self):
+        generalTab = QWidget()
+        self.generalTabLayout = QVBoxLayout()
         self._createButtons()
         self._createArrowButtons()
         self._createStatusBar()
-        
+        generalTab.setLayout(self.generalTabLayout)
+        return generalTab
+
+    def _experimentsTabUI(self):
+        experimentsTab = QWidget()
+        self.experimentsTabLayout = QVBoxLayout()
+        self._staticPositionFeatures()
+        self._translationFeatures()
+        self._rotationFeatures()
+        experimentsTab.setLayout(self.experimentsTabLayout)
+        return experimentsTab
+
+    def _staticPositionFeatures(self):
+        positionLayout = QHBoxLayout()
+
+        positionLabel = QLabel("Number of Points: ")
+        positionLayout.addWidget(positionLabel)
+
+        numPoints_lineEdit = QLineEdit()
+        numPoints_lineEdit.setValidator(QDoubleValidator())
+        positionLayout.addWidget(numPoints_lineEdit)
+
+        positionButton = QPushButton("Static Positions")
+        positionLayout.addWidget(positionButton)
+        positionButton.clicked.connect(partial(self.positionExperiment_wrapper, numPoints_lineEdit))
+        self.experimentsTabLayout.addLayout(positionLayout)
+
+    def _translationFeatures(self):
+        translationLayout = QHBoxLayout()
+
+        translationLabel = QLabel("Repetitions: ")
+        translationLayout.addWidget(translationLabel)
+
+        translationReps_lineEdit = QLineEdit()
+        translationReps_lineEdit.setValidator(QDoubleValidator())
+        translationLayout.addWidget(translationReps_lineEdit)
+
+        translationButton = QPushButton("Translation")
+        translationLayout.addWidget(translationButton)
+        translationButton.clicked.connect(partial(self.translationExperiment_wrapper, translationReps_lineEdit))
+        self.experimentsTabLayout.addLayout(translationLayout)
+
+    def _rotationFeatures(self):
+        rotationLayout = QHBoxLayout()
+
+        rotationLabel = QLabel("Repetitions: ")
+        rotationLayout.addWidget(rotationLabel)
+
+        rotationReps_lineEdit = QLineEdit()
+        rotationReps_lineEdit.setValidator(QDoubleValidator())
+        rotationLayout.addWidget(rotationReps_lineEdit)
+
+        rotationButton = QPushButton("Rotation")
+        rotationLayout.addWidget(rotationButton)
+        rotationButton.clicked.connect(partial(self.rotationExperiment_wrapper, rotationReps_lineEdit))
+        self.experimentsTabLayout.addLayout(rotationLayout)
+
     def _createButtons(self):
         # Create layout for fundamental functions/buttons
         baseFunctionLayout = QVBoxLayout()
@@ -99,8 +165,8 @@ class GUIWindow(QMainWindow):
         moveFunctionLayout.addLayout(moveInputLayout)
         moveFunctionLayout.addLayout(moveButtonLayout)
         #Add sub layouts to outer layout
-        self.outerLayout.addLayout(baseFunctionLayout)
-        self.outerLayout.addLayout(moveFunctionLayout)
+        self.generalTabLayout.addLayout(baseFunctionLayout)
+        self.generalTabLayout.addLayout(moveFunctionLayout)
 
     def _createArrowButtons(self):
         self.baseArrowLayout = QHBoxLayout()
@@ -175,7 +241,7 @@ class GUIWindow(QMainWindow):
         self.baseArrowLayout.addLayout(YZArrowLayout)
         self.baseArrowLayout.addLayout(XArrowLayout)
 
-        self.outerLayout.addLayout(self.baseArrowLayout)
+        self.generalTabLayout.addLayout(self.baseArrowLayout)
 
 
     def _createStatusBar(self):
@@ -201,6 +267,18 @@ class GUIWindow(QMainWindow):
     def jog_wrapper(self, direction, speed):
         linear_speed = speed.text()
         rbt.jog_robot(direction, float(linear_speed))
+
+    def positionExperiment_wrapper(self, num_points):
+        points = num_points.text()
+        pass
+
+    def translationExperiment_wrapper(self, repetitions):
+        reps = repetitions.text()
+        pass
+
+    def rotationExperiment_wrapper(self, repetitions):
+        reps = repetitions.text()
+        pass
 
 def main():
     GUI = QApplication([])
