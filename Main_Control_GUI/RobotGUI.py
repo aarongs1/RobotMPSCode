@@ -72,6 +72,7 @@ class GUIWindow(QMainWindow):
 
         numPoints_lineEdit = QLineEdit()
         numPoints_lineEdit.setValidator(QDoubleValidator())
+        numPoints_lineEdit.setFixedWidth(100)
         positionLayout.addWidget(numPoints_lineEdit)
 
         positionButton = QPushButton("Static Positions")
@@ -87,6 +88,7 @@ class GUIWindow(QMainWindow):
 
         translationReps_lineEdit = QLineEdit()
         translationReps_lineEdit.setValidator(QDoubleValidator())
+        translationReps_lineEdit.setFixedWidth(100)
         translationLayout.addWidget(translationReps_lineEdit)
 
         translationButton = QPushButton("Translation")
@@ -102,6 +104,7 @@ class GUIWindow(QMainWindow):
 
         rotationReps_lineEdit = QLineEdit()
         rotationReps_lineEdit.setValidator(QDoubleValidator())
+        rotationReps_lineEdit.setFixedWidth(100)
         rotationLayout.addWidget(rotationReps_lineEdit)
 
         rotationButton = QPushButton("Rotation")
@@ -270,15 +273,15 @@ class GUIWindow(QMainWindow):
 
     def positionExperiment_wrapper(self, num_points):
         points = num_points.text()
-        pass
+        rbt.position_experiment(int(points))
 
     def translationExperiment_wrapper(self, repetitions):
         reps = repetitions.text()
-        pass
+        rbt.translation_experiment(int(reps))
 
     def rotationExperiment_wrapper(self, repetitions):
         reps = repetitions.text()
-        pass
+        rbt.rotation_experiment(int(reps))
 
 def main():
     GUI = QApplication([])

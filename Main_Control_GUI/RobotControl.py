@@ -1,6 +1,8 @@
 import mecademicpy.robot as mdr
 import mecademicpy.mx_robot_def as mx_robot
 import serial
+import time
+import numpy as np
 
 class Status():
     def __init__(self):
@@ -137,6 +139,42 @@ def jog_robot(direction, speed):
     else:
         raise Exception("Robot not activated and homed")
     
+def position_experiment(num_points):
+    if robotStatus.get_initialize():
+        angle_range = 28.2 - 5.07
+        r = 740.74
+        points = [(155,110.5)]
+        if num_points:
+             interval = angle_range/num_points
+             for i in range(num_points):
+                 angle_rad = (5.07 + (i+1)*interval)*np.pi/180
+                 points.append((r*np.cos(angle_rad), r*np.sin(angle_rad)))
+        else:
+            points.append((70,395))
+        for point in points:
+            robot.MovePose(point[0],0,point[1],0,90,0)
+            robot.WaitIdle()
+            robot.Delay(2)
+    else:
+        raise Exception("Robot not activated and homed")
+
+def translation_experiment(repetitions):
+    if True:
+        for i in range(repetitions):
+            print("translation")
+            time.sleep(1)
+            #translation(20, 10)
+    else:
+        raise Exception("Robot not activated and homed")
+
+def rotation_experiment(repetitions):
+    if True:
+        for i in range(repetitions):
+            print("rotation")
+            time.sleep(1)
+            #rotation(360, 100)
+    else:
+        raise Exception("Robot not activated and homed")
 
 """""""""""""""
 Main functions defining general robot movements
