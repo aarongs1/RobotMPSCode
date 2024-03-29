@@ -81,6 +81,17 @@ def beam_pos():
         robot.MoveLin(70,0,395,0,90,0)
     else:
         raise Exception("Robot not activated and homed")
+    
+def origin_pos():
+    if robotStatus.get_initialize():
+        robot.SetCartLinVel(5)
+        robot.SetJointVel(10)
+        robot.SetConf(1,1,-1)
+        robot.MovePose(158,0,130,0,90,0)
+        robot.MoveLin(158,0,110.5,0,90,0)
+        robot.MoveLin(155.5,0,110.5,0,90,0)
+    else:
+        raise Exception("Robot not activated and homed")
 
 def pickup_mouse():
     x = 155
@@ -141,38 +152,46 @@ def jog_robot(direction, speed):
     
 def position_experiment(num_points):
     if robotStatus.get_initialize():
-        angle_range = 28.2 - 5.07
+        angle_range = 28.78 - 5.59
         r = 740.74
-        points = [(155,110.5)]
+        points = [(158,110.5)]
         if num_points:
-             interval = angle_range/num_points
-             for i in range(num_points):
-                 angle_rad = (5.07 + (i+1)*interval)*np.pi/180
-                 points.append((r*np.cos(angle_rad), r*np.sin(angle_rad)))
-        else:
-            points.append((70,395))
-        for point in points:
-            robot.MovePose(point[0],0,point[1],0,90,0)
-            robot.WaitIdle()
-            robot.Delay(2)
+             interval = angle_range/(num_points-1)
+             for i in range(num_points-1):
+                 angle_rad = (5.59 + (i+1)*interval)*np.pi/180
+                 points.append((r*np.cos(angle_rad) - 579.22, 38.33 + r*np.sin(angle_rad)))
+        points.append((70,395)) 
+        robot.SetJointVel(10)
+        robot.SetCartLinVel(10)
+        for i in range(2):
+            robot.SetConf(1,1,-1)
+            first_point = points[0]
+            robot.MovePose(first_point[0],0,first_point[1]+20,0,90,0)
+            robot.MoveLin(first_point[0],0,first_point[1],0,90,0)
+            robot.Delay(5)
+            for point in points[1:]: 
+                if point[1] > 300:
+                    robot.SetConf(1,1,1)
+                robot.MovePose(point[0],0,point[1],0,90,0)
+                robot.Delay(5) 
     else:
         raise Exception("Robot not activated and homed")
 
 def translation_experiment(repetitions):
-    if True:
+    if robotStatus.get_initialize():
         for i in range(repetitions):
             print("translation")
             time.sleep(1)
-            #translation(20, 10)
+            translation(20, 10)
     else:
         raise Exception("Robot not activated and homed")
 
 def rotation_experiment(repetitions):
-    if True:
+    if robotStatus.get_initialize():
         for i in range(repetitions):
             print("rotation")
             time.sleep(1)
-            #rotation(360, 100)
+            rotation(360, 100)
     else:
         raise Exception("Robot not activated and homed")
 
@@ -258,7 +277,7 @@ if __name__ == "__main__":
     #setup serial
     comport = 'COM7'
     baudrate = 115200
-    #ser = serial.Serial(comport, baudrate, timeout=0.1)
+    ser = serial.Serial(comport, baudrate, timeout=0.1)
     data = 0
     time = ''
     msg = 'TRIGGER'

@@ -44,7 +44,7 @@ class GUIWindow(QMainWindow):
         tabs.addTab(self._generalTabUI(), "General")
         tabs.addTab(self._experimentsTabUI(), "Experiments")
 
-        self.outerLayout.addWidget(tabs)
+        self.outerLayout.addWidget(tabs)    
         
     def _generalTabUI(self):
         generalTab = QWidget()
@@ -132,6 +132,10 @@ class GUIWindow(QMainWindow):
         beam_button = QPushButton("Beam Position")
         baseFunctionLayout.addWidget(beam_button)
         beam_button.clicked.connect(rbt.beam_pos)
+
+        origin_button = QPushButton("Origin Position")
+        baseFunctionLayout.addWidget(origin_button)
+        origin_button.clicked.connect(rbt.origin_pos)
 
         # Create layouts for robot/mouse movement functions 
         moveFunctionLayout = QHBoxLayout()
