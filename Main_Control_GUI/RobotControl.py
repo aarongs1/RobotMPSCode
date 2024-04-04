@@ -48,6 +48,11 @@ def add(num):
 def default():   
     pass 
 
+def reset_error():
+    robot.ResetError()
+    robot.ClearMotion()
+    robot.ResumeMotion()
+
 def initialize_robot(): 
     global robot
     robot = mdr.Robot()                     #connect to robot's ip address
@@ -92,7 +97,7 @@ def origin_pos():
         robot.MoveLin(155.5,0,110.5,0,90,0)
     else:
         raise Exception("Robot not activated and homed")
-
+ 
 def pickup_mouse():
     x = 155
     y = 0
@@ -154,7 +159,7 @@ def position_experiment(num_points):
     if robotStatus.get_initialize():
         angle_range = 28.78 - 5.59
         r = 740.74
-        points = [(158,110.5)]
+        points = [(700,110.5)]
         if num_points:
              interval = angle_range/(num_points-1)
              for i in range(num_points-1):
@@ -192,6 +197,15 @@ def rotation_experiment(repetitions):
             print("rotation")
             time.sleep(1)
             rotation(360, 100)
+    else:
+        raise Exception("Robot not activated and homed")
+    
+def helix_experiment(repetitions):
+    if robotStatus.get_initialize():
+        for i in range(repetitions):
+            print("helix")
+            time.sleep(1)
+            helix(20, 10, 210, 50)
     else:
         raise Exception("Robot not activated and homed")
 
@@ -260,6 +274,13 @@ def translation(distance, lin_vel):
     robot.SetCartLinVel(lin_vel)
     robot.MoveLinRelTRF(0,0,distance,0,0,0)
     robot.MoveLinRelTRF(0,0,-distance,0,0,0)
+
+def helix(distance, lin_vel, angle, ang_vel):
+    robot.WaitIdle()
+    robot.SetCartLinVel(lin_vel)
+    robot.SetJointVel(ang_vel)
+    robot.MoveLinRelTRF(0,0,distance,0,0,angle)
+    robot.MoveLinRelTRF(0,0,-distance,0,0,-angle)
 
 def clear_beam():
     robot.SetCartLinVel(5)

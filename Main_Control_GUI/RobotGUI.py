@@ -61,6 +61,7 @@ class GUIWindow(QMainWindow):
         self._staticPositionFeatures()
         self._translationFeatures()
         self._rotationFeatures()
+        self._helixFeatures()
         experimentsTab.setLayout(self.experimentsTabLayout)
         return experimentsTab
 
@@ -111,6 +112,22 @@ class GUIWindow(QMainWindow):
         rotationLayout.addWidget(rotationButton)
         rotationButton.clicked.connect(partial(self.rotationExperiment_wrapper, rotationReps_lineEdit))
         self.experimentsTabLayout.addLayout(rotationLayout)
+
+    def _helixFeatures(self):
+        helixLayout = QHBoxLayout()
+
+        helixLabel = QLabel("Repetitions: ")
+        helixLayout.addWidget(helixLabel)
+
+        helixReps_lineEdit = QLineEdit()
+        helixReps_lineEdit.setValidator(QDoubleValidator())
+        helixReps_lineEdit.setFixedWidth(100)
+        helixLayout.addWidget(helixReps_lineEdit)
+
+        helixButton = QPushButton("Helix")
+        helixLayout.addWidget(helixButton)
+        helixButton.clicked.connect(partial(self.helixExperiment_wrapper, helixReps_lineEdit))
+        self.experimentsTabLayout.addLayout(helixLayout)
 
     def _createButtons(self):
         # Create layout for fundamental functions/buttons
@@ -252,7 +269,14 @@ class GUIWindow(QMainWindow):
 
 
     def _createStatusBar(self):
+        statusBar_widget = QWidget()
+        statusBar_layout = QHBoxLayout()
+        resetButton = QPushButton("Reset Error")
+        statusBar_layout.addWidget(resetButton)
+        resetButton.clicked.connect(rbt.reset_error)
+        statusBar_widget.setLayout(statusBar_layout)
         self.status_bar = QStatusBar()
+        self.status_bar.addPermanentWidget(statusBar_widget)
         self.status_bar.showMessage("Robot not initialized")
         self.setStatusBar(self.status_bar)
 
@@ -286,6 +310,10 @@ class GUIWindow(QMainWindow):
     def rotationExperiment_wrapper(self, repetitions):
         reps = repetitions.text()
         rbt.rotation_experiment(int(reps))
+
+    def helixExperiment_wrapper(self, repetitions):
+        reps = repetitions.text()
+        rbt.helix_experiment(int(reps))
 
 def main():
     GUI = QApplication([])
