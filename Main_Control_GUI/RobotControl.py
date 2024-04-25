@@ -3,6 +3,7 @@ import mecademicpy.mx_robot_def as mx_robot
 import serial
 import time
 import numpy as np
+import PolarisTracking as polaris
 
 class Status():
     def __init__(self):
@@ -64,6 +65,7 @@ def initialize_robot():
     global robotStatus
     robotStatus = Status()
     robotStatus.set_initialize()
+    polaris.setup()
 
 def rest_pos():
     if robotStatus.get_initialize():
@@ -181,13 +183,17 @@ def position_experiment(num_points):
                 robot.Delay(5) 
     else:
         raise Exception("Robot not activated and homed")
+    
+def polaris_track():
+    polaris.run()
 
 def translation_experiment(repetitions):
     if robotStatus.get_initialize():
         for i in range(repetitions):
-            print("translation")
-            time.sleep(1)
-            translation(20, 10)
+            translation(50, 10)
+            print('bruh')
+        polaris.start()
+        #robot.SetCheckpoint(1)
     else:
         raise Exception("Robot not activated and homed")
 
@@ -208,6 +214,7 @@ def helix_experiment(repetitions):
             helix(20, 10, 210, 50)
     else:
         raise Exception("Robot not activated and homed")
+
 
 """""""""""""""
 Main functions defining general robot movements
@@ -270,7 +277,7 @@ def rotation(angle, ang_vel):
     robot.SetJointVel(int(ang_vel/2))
 
 def translation(distance, lin_vel):
-    robot.WaitIdle()
+    #robot.WaitIdle()
     robot.SetCartLinVel(lin_vel)
     robot.MoveLinRelTRF(0,0,distance,0,0,0)
     robot.MoveLinRelTRF(0,0,-distance,0,0,0)
@@ -291,6 +298,10 @@ def waitTrigger(msg, data, ser):
     while data != msg:
         data = ser.readline().decode().strip()
     data = 0
+
+def get_move_status():
+    robot_status = robot.GetStatusRobot()
+    return robot_status.end_of_block_status
 
 if __name__ == "__main__":
     program = 1
