@@ -9,6 +9,7 @@ import time
 import six
 from sksurgerynditracker.nditracker import NDITracker
 import RobotControl as rbt
+import numpy as np
 
 class Polaris():
     def __init__(self, tracker):
@@ -40,8 +41,14 @@ def start():
     
 def record():
     track = camera.get_track_status()
+    pos_mat = np.empty([1,3])
+    frame_arr = np.array([])
     while track:
-        six.print_(camera.tracker.get_frame())
+        frame_info = camera.tracker.get_frame()
+        frame_num = frame_info[2][0]
+        position = frame_info[3][0][:3,3]
+        frame_arr = np.append(frame_arr, frame_num)
+        pos_mat = np.vstack([pos_mat, position])
         time.sleep(0.300333)
         move_status = rbt.get_move_status()
         print("MOVE_STATUS: ", move_status)
@@ -49,6 +56,10 @@ def record():
             camera.set_track_status(False)
             track = camera.get_track_status()
     stop()
+    print(pos_mat)
+    print(frame_arr)
+    np.savetxt('C:/Users/aaron/Desktop/LooLab/Meca500_code/RobotMPSCode/PolarisData/pos_mat1.txt',pos_mat)
+    np.savetxt('C:/Users/aaron/Desktop/LooLab/Meca500_code/RobotMPSCode/PolarisData/frame_vec1.txt', frame_arr)
 
 def stop():
     print("Stopping tracking")
