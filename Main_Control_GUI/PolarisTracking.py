@@ -49,7 +49,7 @@ def record():
         position = frame_info[3][0][:3,3]
         frame_arr = np.append(frame_arr, frame_num)
         pos_mat = np.vstack([pos_mat, position])
-        time.sleep(0.300333)
+        time.sleep(0.1)
         move_status = rbt.get_move_status()
         print("MOVE_STATUS: ", move_status)
         if move_status:
@@ -58,8 +58,8 @@ def record():
     stop()
     print(pos_mat)
     print(frame_arr)
-    np.savetxt('C:/Users/aaron/Desktop/LooLab/Meca500_code/RobotMPSCode/PolarisData/pos_mat1.txt',pos_mat)
-    np.savetxt('C:/Users/aaron/Desktop/LooLab/Meca500_code/RobotMPSCode/PolarisData/frame_vec1.txt', frame_arr)
+    np.savetxt('C:/Users/aaron/Desktop/LooLab/Meca500_code/RobotMPSCode/PolarisData/pos_mat10_50dist_10speed.txt',pos_mat)
+    np.savetxt('C:/Users/aaron/Desktop/LooLab/Meca500_code/RobotMPSCode/PolarisData/frame_vec10_50dist_10speed.txt', frame_arr)
 
 def stop():
     print("Stopping tracking")
