@@ -65,7 +65,6 @@ def initialize_robot():
     global robotStatus
     robotStatus = Status()
     robotStatus.set_initialize()
-    polaris.setup()
 
 def rest_pos():
     if robotStatus.get_initialize():
@@ -159,9 +158,10 @@ def jog_robot(direction, speed):
     
 def position_experiment(num_points):
     if robotStatus.get_initialize():
+        repetitions = 1
         angle_range = 28.78 - 5.59
         r = 740.74
-        points = [(700,110.5)]
+        points = [(158,110.5)]
         if num_points:
              interval = angle_range/(num_points-1)
              for i in range(num_points-1):
@@ -170,29 +170,39 @@ def position_experiment(num_points):
         points.append((70,395)) 
         robot.SetJointVel(10)
         robot.SetCartLinVel(10)
-        for i in range(2):
+        for i in range(repetitions):
             robot.SetConf(1,1,-1)
             first_point = points[0]
             robot.MovePose(first_point[0],0,first_point[1]+20,0,90,0)
             robot.MoveLin(first_point[0],0,first_point[1],0,90,0)
-            robot.Delay(5)
+            robot.Delay(1)
+            robot.SetCheckpoint(1)
+            robot.Delay(2)
+            checkpoint_num = 2
             for point in points[1:]: 
                 if point[1] > 300:
                     robot.SetConf(1,1,1)
                 robot.MovePose(point[0],0,point[1],0,90,0)
-                robot.Delay(5) 
+                robot.Delay(1)
+                robot.SetCheckpoint(checkpoint_num)
+                robot.Delay(2) 
+                checkpoint_num += 1
+        print('BRUH')
+        polaris.start('static position', repetitions, num_points)
     else:
         raise Exception("Robot not activated and homed")
     
-def polaris_track():
-    polaris.run()
+def polaris_setup():
+    polaris.setup()
+
+def polaris_position():
+    print('Not Implemented')
 
 def translation_experiment(repetitions):
     if robotStatus.get_initialize():
         for i in range(repetitions):
             translation(50, 10)
-            print('bruh')
-        polaris.start()
+        polaris.start('translation')
         #robot.SetCheckpoint(1)
     else:
         raise Exception("Robot not activated and homed")
@@ -302,6 +312,10 @@ def waitTrigger(msg, data, ser):
 def get_move_status():
     robot_status = robot.GetStatusRobot()
     return robot_status.end_of_block_status
+
+def get_checkpoint():
+    robot_data = robot.GetRobotRtData()  
+    return robot_data.rt_checkpoint.data
 
 if __name__ == "__main__":
     program = 1

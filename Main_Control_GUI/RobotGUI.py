@@ -58,6 +58,7 @@ class GUIWindow(QMainWindow):
     def _experimentsTabUI(self):
         experimentsTab = QWidget()
         self.experimentsTabLayout = QVBoxLayout()
+        self._createExperimentButtons()
         self._staticPositionFeatures()
         self._translationFeatures()
         self._rotationFeatures()
@@ -65,7 +66,16 @@ class GUIWindow(QMainWindow):
         experimentsTab.setLayout(self.experimentsTabLayout)
         return experimentsTab
 
-    def _staticPositionFeatures(self):
+    def _createExperimentButtons(self):
+        polarisStartButton = QPushButton("Start Polaris")
+        polarisStartButton.clicked.connect(rbt.polaris_setup)
+        self.experimentsTabLayout.addWidget(polarisStartButton)
+
+        posCaptureButton = QPushButton("Initial Position Capture")
+        posCaptureButton.clicked.connect(rbt.polaris_position)
+        self.experimentsTabLayout.addWidget(posCaptureButton)
+
+    def _staticPositionFeatures(self): 
         positionLayout = QHBoxLayout()
 
         positionLabel = QLabel("Number of Points: ")

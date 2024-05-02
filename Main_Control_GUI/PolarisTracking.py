@@ -27,19 +27,22 @@ track = False
 
 def setup():
     settings_polaris = {"tracker type": "polaris",
-    "romfiles" : ['C:/Users/aaron/Desktop/LooLab/Polaris/ToolDefs/PhantomFlatUniqueSegPass2.rom']}
+    "romfiles" : ['C:/Users/aaron/Desktop/LooLab/Polaris/ToolDefs/PhantomAllGeomPass.rom']}
     tracker = NDITracker(settings_polaris)
     global camera
     camera = Polaris(tracker)
 
 
-def start():
+def start(experiment_name, repetitions=None, num_points=None):
     print("Starting Tracking")
     camera.tracker.start_tracking()
     camera.set_track_status(True)
-    record()
+    if experiment_name == 'translation':
+        record_translation()
+    if experiment_name == 'static position':
+        record_position(repetitions, num_points)
     
-def record():
+def record_translation():
     track = camera.get_track_status()
     pos_mat = np.empty([1,3])
     frame_arr = np.array([])
@@ -58,8 +61,35 @@ def record():
     stop()
     print(pos_mat)
     print(frame_arr)
-    np.savetxt('C:/Users/aaron/Desktop/LooLab/Meca500_code/RobotMPSCode/PolarisData/pos_mat10_50dist_10speed.txt',pos_mat)
-    np.savetxt('C:/Users/aaron/Desktop/LooLab/Meca500_code/RobotMPSCode/PolarisData/frame_vec10_50dist_10speed.txt', frame_arr)
+    np.savetxt('C:/Users/aaron/Desktop/LooLab/Meca500_code/RobotMPSCode/PolarisData/pos_mat10_50dist_10speed_2.txt',pos_mat)
+    np.savetxt('C:/Users/aaron/Desktop/LooLab/Meca500_code/RobotMPSCode/PolarisData/frame_vec10_50dist_10speed_2.txt', frame_arr)
+
+def record_position(repetitions, num_points):
+    #stopped = rbt.get_move_status()
+    pos_mat = np.empty([1,3])
+    frame_arr = np.array([])
+    for i in range(repetitions):
+        for j in range(num_points):
+            checkpoint = rbt.get_checkpoint()
+            print("first: ", checkpoint)
+            while checkpoint != j+1:
+                print('MOVING')
+                checkpoint = rbt.get_checkpoint()
+                print("loop: ", checkpoint)
+                #stopped = rbt.get_move_status()
+            print('RECORD_POSITION')
+            frame_info = camera.tracker.get_frame()
+            frame_num = frame_info[2][0]
+            position = frame_info[3][0][:3,3]
+            frame_arr = np.append(frame_arr, frame_num)
+            pos_mat = np.vstack([pos_mat, position])
+            #stopped = False
+    stop()
+    print(pos_mat)
+    print(frame_arr)
+    np.savetxt('C:/Users/aaron/Desktop/LooLab/Meca500_code/RobotMPSCode/PolarisData/pos_mat_test.txt',pos_mat)
+    np.savetxt('C:/Users/aaron/Desktop/LooLab/Meca500_code/RobotMPSCode/PolarisData/frame_vec_test.txt', frame_arr)
+
 
 def stop():
     print("Stopping tracking")
