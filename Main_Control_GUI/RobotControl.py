@@ -158,7 +158,7 @@ def jog_robot(direction, speed):
     
 def position_experiment(num_points):
     if robotStatus.get_initialize():
-        repetitions = 1
+        repetitions = 10
         angle_range = 28.78 - 5.59
         r = 740.74
         points = [(158,110.5)]
@@ -187,7 +187,6 @@ def position_experiment(num_points):
                 robot.SetCheckpoint(checkpoint_num)
                 robot.Delay(2) 
                 checkpoint_num += 1
-        print('BRUH')
         polaris.start('static position', repetitions, num_points)
     else:
         raise Exception("Robot not activated and homed")
@@ -204,6 +203,30 @@ def translation_experiment(repetitions):
             translation(50, 10)
         polaris.start('translation')
         #robot.SetCheckpoint(1)
+    else:
+        raise Exception("Robot not activated and homed")
+    
+def rot_position_experiment(num_points):
+    if robotStatus.get_initialize():
+        repetitions = 10
+        angle_range = 26
+        points = [(-13)]
+        if num_points:
+             interval = angle_range/(num_points-1)
+             for i in range(num_points-1):
+                 angle = -30 + (i+1)*interval
+                 points.append(angle)
+        points.append(13) 
+        robot.SetJointVel(10)
+        robot.SetCartLinVel(10)
+        for i in range(repetitions):
+            for point in points: 
+                robot.MovePose(161,0,180.5,point[i],90,0)
+                robot.Delay(1)
+                robot.SetCheckpoint(checkpoint_num)
+                robot.Delay(2) 
+                checkpoint_num += 1
+        polaris.start('rotation position', repetitions, num_points)
     else:
         raise Exception("Robot not activated and homed")
 
@@ -315,7 +338,7 @@ def get_move_status():
 
 def get_checkpoint():
     robot_data = robot.GetRobotRtData()  
-    return robot_data.rt_checkpoint.data
+    return robot_data.rt_checkpoint.data[0]
 
 if __name__ == "__main__":
     program = 1

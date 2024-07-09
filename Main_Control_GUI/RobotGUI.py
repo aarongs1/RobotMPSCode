@@ -107,6 +107,22 @@ class GUIWindow(QMainWindow):
         translationButton.clicked.connect(partial(self.translationExperiment_wrapper, translationReps_lineEdit))
         self.experimentsTabLayout.addLayout(translationLayout)
 
+    def _staticRotationFeatures(self): 
+        rotpositionLayout = QHBoxLayout()
+
+        rotpositionLabel = QLabel("Number of Points: ")
+        rotpositionLayout.addWidget(rotpositionLabel)
+
+        numAngPoints_lineEdit = QLineEdit()
+        numAngPoints_lineEdit.setValidator(QDoubleValidator())
+        numAngPoints_lineEdit.setFixedWidth(100)
+        rotpositionLayout.addWidget(numAngPoints_lineEdit)
+
+        rotpositionButton = QPushButton("Static Angular Positions")
+        rotpositionLayout.addWidget(rotpositionButton)
+        rotpositionButton.clicked.connect(partial(self.rotpositionExperiment_wrapper, numAngPoints_lineEdit))
+        self.experimentsTabLayout.addLayout(rotpositionLayout)
+
     def _rotationFeatures(self):
         rotationLayout = QHBoxLayout()
 
@@ -316,6 +332,10 @@ class GUIWindow(QMainWindow):
     def translationExperiment_wrapper(self, repetitions):
         reps = repetitions.text()
         rbt.translation_experiment(int(reps))
+
+    def rotpositionExperiment_wrapper(self, num_points):
+        points = num_points.text()
+        rbt.rot_position_experiment(int(points))
 
     def rotationExperiment_wrapper(self, repetitions):
         reps = repetitions.text()

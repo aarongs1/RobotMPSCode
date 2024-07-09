@@ -41,10 +41,19 @@ def start(experiment_name, repetitions=None, num_points=None):
         record_translation()
     if experiment_name == 'static position':
         record_position(repetitions, num_points)
+    if experiment_name == 'rotation position':
+        record_ang_position(repetitions, num_points)
     
 def record_translation():
     track = camera.get_track_status()
     pos_mat = np.empty([1,3])
+
+    #get initial position
+    frame_info = camera.tracker.get_frame()
+    frame_num = frame_info[2][0]
+    position = frame_info[3][0][:3,3]
+    pos_mat = np.vstack([pos_mat, position])
+    
     frame_arr = np.array([])
     while track:
         frame_info = camera.tracker.get_frame()
@@ -61,21 +70,20 @@ def record_translation():
     stop()
     print(pos_mat)
     print(frame_arr)
-    np.savetxt('C:/Users/aaron/Desktop/LooLab/Meca500_code/RobotMPSCode/PolarisData/pos_mat10_50dist_10speed_2.txt',pos_mat)
-    np.savetxt('C:/Users/aaron/Desktop/LooLab/Meca500_code/RobotMPSCode/PolarisData/frame_vec10_50dist_10speed_2.txt', frame_arr)
+    np.savetxt('C:/Users/aaron/Desktop/LooLab/Meca500_code/RobotMPSCode/PolarisData/translation_pos_mat_50dis_10spd_10reps_1.txt', pos_mat)
+    np.savetxt('C:/Users/aaron/Desktop/LooLab/Meca500_code/RobotMPSCode/PolarisData/translation_frame_vec_50dis_10spd_10reps_1.txt', frame_arr)
 
 def record_position(repetitions, num_points):
     #stopped = rbt.get_move_status()
     pos_mat = np.empty([1,3])
     frame_arr = np.array([])
     for i in range(repetitions):
+        checkpoint = rbt.get_checkpoint()
+        print('first: ', checkpoint)
         for j in range(num_points):
-            checkpoint = rbt.get_checkpoint()
-            print("first: ", checkpoint)
             while checkpoint != j+1:
-                print('MOVING')
                 checkpoint = rbt.get_checkpoint()
-                print("loop: ", checkpoint)
+                print('loop: ', checkpoint)
                 #stopped = rbt.get_move_status()
             print('RECORD_POSITION')
             frame_info = camera.tracker.get_frame()
@@ -87,8 +95,31 @@ def record_position(repetitions, num_points):
     stop()
     print(pos_mat)
     print(frame_arr)
-    np.savetxt('C:/Users/aaron/Desktop/LooLab/Meca500_code/RobotMPSCode/PolarisData/pos_mat_test.txt',pos_mat)
-    np.savetxt('C:/Users/aaron/Desktop/LooLab/Meca500_code/RobotMPSCode/PolarisData/frame_vec_test.txt', frame_arr)
+    np.savetxt('C:/Users/aaron/Desktop/LooLab/Meca500_code/RobotMPSCode/PolarisData/position_pos_mat_5pts_10reps.txt',pos_mat)
+    np.savetxt('C:/Users/aaron/Desktop/LooLab/Meca500_code/RobotMPSCode/PolarisData/position_frame_vec_5pts_10reps.txt', frame_arr)
+
+def record_ang_position(repetitions, num_points):
+    pos_mat = np.empty([1,3])
+    frame_arr = np.array([])
+    for i in range(repetitions):
+        checkpoint = rbt.get_checkpoint()
+        print('first: ', checkpoint)
+        for j in range(num_points):
+            while checkpoint != j+1:
+                checkpoint = rbt.get_checkpoint()
+                print('loop: ', checkpoint)
+            print('RECORD_ANG_POSITION')
+            frame_info = camera.tracker.get_frame()
+            print(frame_info)
+            frame_num = frame_info[2][0]
+            position = frame_info[3][0][:3,3]
+            frame_arr = np.append(frame_arr, frame_num)
+            pos_mat = np.vstack([pos_mat, position])
+    stop()
+    print(pos_mat)
+    print(frame_arr)
+    np.savetxt('C:/Users/aaron/Desktop/LooLab/Meca500_code/RobotMPSCode/PolarisData/ang_position_pos_mat_10pts_10reps.txt', pos_mat)
+    np.savetxt('C:/Users/aaron/Desktop/LooLab/Meca500_code/RobotMPSCode/PolarisData/ang_position_frame_vec_10pts_10reps.txt', frame_arr)
 
 
 def stop():
