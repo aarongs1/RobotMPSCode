@@ -45,7 +45,8 @@ class GUIWindow(QMainWindow):
         tabs.addTab(self._experimentsTabUI(), "Experiments")
 
         self.outerLayout.addWidget(tabs)    
-        
+    
+    #Tab for general motion commands
     def _generalTabUI(self):
         generalTab = QWidget()
         self.generalTabLayout = QVBoxLayout()
@@ -55,6 +56,7 @@ class GUIWindow(QMainWindow):
         generalTab.setLayout(self.generalTabLayout)
         return generalTab
 
+    #Tab for polaris experiments commands
     def _experimentsTabUI(self):
         experimentsTab = QWidget()
         self.experimentsTabLayout = QVBoxLayout()
@@ -62,6 +64,7 @@ class GUIWindow(QMainWindow):
         self._staticPositionFeatures()
         self._translationFeatures()
         self._rotationFeatures()
+        self._staticRotationFeatures()
         self._helixFeatures()
         experimentsTab.setLayout(self.experimentsTabLayout)
         return experimentsTab
@@ -74,7 +77,7 @@ class GUIWindow(QMainWindow):
         posCaptureButton = QPushButton("Initial Position Capture")
         posCaptureButton.clicked.connect(rbt.polaris_position)
         self.experimentsTabLayout.addWidget(posCaptureButton)
-
+    
     def _staticPositionFeatures(self): 
         positionLayout = QHBoxLayout()
 
@@ -118,7 +121,7 @@ class GUIWindow(QMainWindow):
         numAngPoints_lineEdit.setFixedWidth(100)
         rotpositionLayout.addWidget(numAngPoints_lineEdit)
 
-        rotpositionButton = QPushButton("Static Angular Positions")
+        rotpositionButton = QPushButton("Angular Positions")
         rotpositionLayout.addWidget(rotpositionButton)
         rotpositionButton.clicked.connect(partial(self.rotpositionExperiment_wrapper, numAngPoints_lineEdit))
         self.experimentsTabLayout.addLayout(rotpositionLayout)
@@ -155,6 +158,7 @@ class GUIWindow(QMainWindow):
         helixButton.clicked.connect(partial(self.helixExperiment_wrapper, helixReps_lineEdit))
         self.experimentsTabLayout.addLayout(helixLayout)
 
+    #Creates all the buttons for the base movement functionality
     def _createButtons(self):
         # Create layout for fundamental functions/buttons
         baseFunctionLayout = QVBoxLayout()
@@ -181,43 +185,116 @@ class GUIWindow(QMainWindow):
         origin_button.clicked.connect(rbt.origin_pos)
 
         # Create layouts for robot/mouse movement functions 
-        moveFunctionLayout = QHBoxLayout()
-        moveInputLayout = QFormLayout()
-        moveButtonLayout = QVBoxLayout()
+        moveLayout = QGridLayout()
 
-         # Add forms for user input for offsetting axis and rotation
-        offset_lineEdit = QLineEdit()
-        offset_lineEdit.setValidator(QDoubleValidator())
-        moveInputLayout.addRow("Horizontal Offset (mm): ", offset_lineEdit)
+        #First set of inputs
+        offset_xLabel = QLabel("Horizontal Offset (mm): ")
+        rotation_speedLabel = QLabel("Joint Speed (%): ")
+        translation_speedLabel = QLabel("Linear Speed (mm/s): ")
+        moveLayout.addWidget(offset_xLabel, 0, 0)
+        moveLayout.addWidget(rotation_speedLabel, 1, 0)
+        moveLayout.addWidget(translation_speedLabel, 2, 0)
 
-        rotation_lineEdit = QLineEdit()
-        rotation_lineEdit.setValidator(QDoubleValidator())
-        moveInputLayout.addRow("Joint Speed (%): ", rotation_lineEdit)
+        offset_xlineEdit = QLineEdit()
+        offset_xlineEdit.setValidator(QDoubleValidator())
+        moveLayout.addWidget(offset_xlineEdit, 0, 1)
 
-        translation_lineEdit = QLineEdit()
-        translation_lineEdit.setValidator(QDoubleValidator())
-        moveInputLayout.addRow("Linear Speed (%): ", translation_lineEdit)
+        rotation_speedlineEdit = QLineEdit()
+        rotation_speedlineEdit.setValidator(QDoubleValidator())
+        moveLayout.addWidget(rotation_speedlineEdit, 1, 1)
 
-        # Add buttons for offsetting axis and rotation and connect functions
+        translation_speedlineEdit = QLineEdit()
+        translation_speedlineEdit.setValidator(QDoubleValidator())
+        moveLayout.addWidget(translation_speedlineEdit, 2, 1)
+
+        #Second set of inputs
+        offset_yLabel = QLabel("Vertical Offset (mm): ")
+        rotation_repsLabel = QLabel("Repetitions: ")
+        translation_repsLabel = QLabel("Repetitions: ")
+        moveLayout.addWidget(offset_yLabel, 0, 2)
+        moveLayout.addWidget(rotation_repsLabel, 1, 2)
+        moveLayout.addWidget(translation_repsLabel, 2, 2)
+
+        offset_ylineEdit = QLineEdit()
+        offset_ylineEdit.setValidator(QDoubleValidator())
+        moveLayout.addWidget(offset_ylineEdit, 0, 3)
+
+        rotation_repslineEdit = QLineEdit()
+        rotation_repslineEdit.setValidator(QDoubleValidator())
+        moveLayout.addWidget(rotation_repslineEdit, 1, 3)
+
+        translation_repslineEdit = QLineEdit()
+        translation_repslineEdit.setValidator(QDoubleValidator())
+        moveLayout.addWidget(translation_repslineEdit, 2, 3)
+
         offset_button = QPushButton("Offset Axis")
-        moveButtonLayout.addWidget(offset_button)
-        offset_button.clicked.connect(partial(self.offset_wrapper, offset_lineEdit))
+        moveLayout.addWidget(offset_button, 0, 4)
+        offset_button.clicked.connect(partial(self.offset_wrapper, offset_xlineEdit, offset_ylineEdit))
 
-        rotation_button = QPushButton("Rotation")
-        moveButtonLayout.addWidget(rotation_button)
-        rotation_button.clicked.connect(partial(self.rotation_wrapper, rotation_lineEdit))
+        #add final column for distance/angle input for translation/rotation
+        translation_distanceLabel = QLabel("Distance: ")
+        moveLayout.addWidget(translation_distanceLabel, 2, 4)
+        translation_distancelineEdit = QLineEdit()
+        translation_distancelineEdit.setValidator(QDoubleValidator())
+        moveLayout.addWidget(translation_distancelineEdit, 2, 5)
 
         translation_button = QPushButton("Translation")
-        moveButtonLayout.addWidget(translation_button)
-        translation_button.clicked.connect(partial(self.translation_wrapper, translation_lineEdit))
-        
-        # Add input and button layouts to overall move function layout
-        moveFunctionLayout.addLayout(moveInputLayout)
-        moveFunctionLayout.addLayout(moveButtonLayout)
-        #Add sub layouts to outer layout
-        self.generalTabLayout.addLayout(baseFunctionLayout)
-        self.generalTabLayout.addLayout(moveFunctionLayout)
+        moveLayout.addWidget(translation_button, 2, 6)
+        translation_button.clicked.connect(partial(self.translation_wrapper, translation_speedlineEdit, translation_repslineEdit, translation_distancelineEdit))
 
+        rotation_angleLabel = QLabel("Angle: ")
+        moveLayout.addWidget(rotation_angleLabel, 1, 4)
+        rotation_anglelineEdit = QLineEdit()
+        rotation_anglelineEdit.setValidator(QDoubleValidator())
+        moveLayout.addWidget(rotation_anglelineEdit, 1, 5)
+
+        rotation_button = QPushButton("Rotation")
+        moveLayout.addWidget(rotation_button, 1, 6)
+        rotation_button.clicked.connect(partial(self.rotation_wrapper, rotation_speedlineEdit, rotation_repslineEdit, rotation_anglelineEdit))
+
+        self.generalTabLayout.addLayout(baseFunctionLayout)
+
+        self.generalTabLayout.addLayout(moveLayout)
+
+        
+
+########################################################
+        # moveFunctionLayout = QHBoxLayout()
+        # moveInputLayout = QFormLayout()
+        # moveButtonLayout = QVBoxLayout()
+        
+        #  # Add forms for user input for offsetting axis and rotation
+        # offset_lineEdit = QLineEdit()
+        # offset_lineEdit.setValidator(QDoubleValidator())
+        # moveInputLayout.addRow("Horizontal Offset (mm): ", offset_lineEdit)
+
+        # rotation_lineEdit = QLineEdit()
+        # rotation_lineEdit.setValidator(QDoubleValidator())
+        # moveInputLayout.addRow("Joint Speed (%): ", rotation_lineEdit)
+
+        # translation_lineEdit = QLineEdit()
+        # translation_lineEdit.setValidator(QDoubleValidator())
+        # moveInputLayout.addRow("Linear Speed (%): ", translation_lineEdit)
+
+        # # Add buttons for offsetting axis and rotation and connect functions
+        # offset_button = QPushButton("Offset Axis")
+        # moveButtonLayout.addWidget(offset_button)
+        # offset_button.clicked.connect(partial(self.offset_wrapper, offset_lineEdit))
+
+        # rotation_button = QPushButton("Rotation")
+        # moveButtonLayout.addWidget(rotation_button)
+        # rotation_button.clicked.connect(partial(self.rotation_wrapper, rotation_lineEdit))
+
+        # translation_button = QPushButton("Translation")
+        # moveButtonLayout.addWidget(translation_button)
+        # translation_button.clicked.connect(partial(self.translation_wrapper, translation_lineEdit))
+        
+        # # Add input and button layouts to overall move function layout
+        # moveFunctionLayout.addLayout(moveInputLayout)
+        # moveFunctionLayout.addLayout(moveButtonLayout)
+        # #Add sub layouts to outer layout
+
+    #Creates interface for jogging the robot in x,y,z
     def _createArrowButtons(self):
         self.baseArrowLayout = QHBoxLayout()
         self.baseArrowLayout.setSpacing(20)  
@@ -309,17 +386,26 @@ class GUIWindow(QMainWindow):
     def _statusMessage(self):
         self.status_bar.showMessage("Robot initialized and homed")
 
-    def offset_wrapper(self, line_obj):
-        horizontal_offset = line_obj.text()
-        rbt.offset_axis(float(horizontal_offset))
 
-    def rotation_wrapper(self, line_obj):
-        joint_speed = line_obj.text()
-        rbt.rotate_mouse(float(joint_speed))
+    '''''''''''''''
+    Functions below are all wrappers for the GUI that use the text from the input boxes to call functions from RobotControl.py
+    '''''''''''''''
+    def offset_wrapper(self, hor_str, vert_str):
+        horizontal_offset = hor_str.text()
+        vertical_offset = vert_str.text()
+        rbt.offset_axis(float(horizontal_offset), float(vertical_offset))
 
-    def translation_wrapper(self, line_obj):
-        linear_speed = line_obj.text()
-        rbt.translate_mouse(float(linear_speed))
+    def rotation_wrapper(self, joint_speed_str, rep_str, angle_str):
+        joint_speed = joint_speed_str.text()
+        repetitions = rep_str.text()
+        angle = angle_str.text()
+        rbt.rotate_mouse(float(angle), float(joint_speed), int(repetitions))
+
+    def translation_wrapper(self, linear_speed_str, rep_str, distance_str):
+        linear_speed = linear_speed_str.text()
+        repetitions = rep_str.text()
+        distance = distance_str.text()
+        rbt.translate_mouse(float(linear_speed), int(repetitions), float(distance))
 
     def jog_wrapper(self, direction, speed):
         linear_speed = speed.text()
