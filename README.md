@@ -1,5 +1,5 @@
 # Robot Assisted Mouse Positioning System (RAMPS) Guide
-The main files for operating the Meca500 robot with the custom GUI are RobotControl.py and RobotGUI.py. The other files in the folder were used for position tracking with 
+The main files for operating the Meca500 robot with the custom GUI are in the folder called "Main_Control_GUI". The two relevant files are RobotControl.py and RobotGUI.py. All of the other files in the repository are test files and data files from the Polaris tracking experiments and are mainly there for backup purposes. Just donwload the folder called "Main_Control_GUI". The other files in this folder were used for position tracking with 
 the Polaris Spectra optical tracking system. As of right now, I haven't made a guide for using those scripts since they probably won't be used again, so just ignore those. 
 The guide for operating the robot arm is in a GoogleDoc here:
 
